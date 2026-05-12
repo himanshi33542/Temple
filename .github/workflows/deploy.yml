@@ -22,12 +22,22 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+          HOST=${{ secrets.EC2_HOST }}
+          USER=${{ secrets.EC2_USER }}
+
+          ssh $USER@$HOST << 'EOF'
+            set -e
+
             cd /var/www/temple-backend/Temple/server
 
+            echo "Pulling latest code..."
             git pull origin main
+
+            echo "Installing dependencies..."
             npm install
+
+            echo "Restarting PM2..."
             pm2 restart temple-backend
 
             echo "Deployment SUCCESS 🚀"
-          EOF
+          EOF            
